@@ -74,10 +74,18 @@ def show_pokemon(request, pokemon_id):  # noqa: WPS442
     next_evolution_pokemon = requested_pokemon.next_evolution.first()
 
     pokemon_elements = requested_pokemon.element_type.all()
-    element_list = []
+    element_type = []
     if pokemon_elements:
         for element in pokemon_elements:
-            element_list.append({'title': element.title, 'img': element.image.url})
+            element_type.append(
+                {
+                    'title': element.title,
+                    'img': element.image.url,
+                    'strong_against': [
+                        _.title for _ in element.strong_against.all()
+                    ],
+                },
+            )
 
     pokemon = {
         'title_ru': requested_pokemon.title,
@@ -95,7 +103,7 @@ def show_pokemon(request, pokemon_id):  # noqa: WPS442
             'pokemon_id': requested_pokemon.previous_evolution.id,
             'img_url': requested_pokemon.previous_evolution.image.url,
         } if requested_pokemon.previous_evolution else '',
-        'element_type': element_list,
+        'element_type': element_type,
     }
     return render(
         request,
