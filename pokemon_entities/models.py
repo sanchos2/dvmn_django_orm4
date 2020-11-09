@@ -3,9 +3,11 @@ from django.db import models
 
 class PokemonElementType(models.Model):
     """Стихии покемонов."""
-    title = models.CharField(max_length=20)
+
+    title = models.CharField(max_length=20)  # noqa: WPS432
 
     def __str__(self):
+        """Название в админке."""
         return self.title
 
 
