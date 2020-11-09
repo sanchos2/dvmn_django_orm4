@@ -1,6 +1,6 @@
 import folium
-from django.http import HttpResponseNotFound, HttpRequest
-from django.shortcuts import render
+from django.http import HttpRequest
+from django.shortcuts import get_object_or_404, render
 
 from pokemon_entities.models import Pokemon, PokemonEntity
 
@@ -57,10 +57,7 @@ def show_all_pokemons(request):  # noqa: WPS442
 
 def show_pokemon(request, pokemon_id):  # noqa: WPS442
     """Рендеринг запрошенного покемона и его сущностей."""
-    requested_pokemon = Pokemon.objects.get(id=int(pokemon_id))
-
-    if not requested_pokemon:
-        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
+    requested_pokemon = get_object_or_404(Pokemon, id=int(pokemon_id))
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=ZOOM_START)
     requested_pokemon_entities = requested_pokemon.pokemon_entities.all()
@@ -74,6 +71,8 @@ def show_pokemon(request, pokemon_id):  # noqa: WPS442
             image_url,
         )
 
+    next_evolution_pokemon = requested_pokemon.next_evolution.first()
+
     pokemon = {
         'title_ru': requested_pokemon.title,
         'title_en': requested_pokemon.title_en,
@@ -81,10 +80,10 @@ def show_pokemon(request, pokemon_id):  # noqa: WPS442
         'description': requested_pokemon.description,
         'img_url': requested_pokemon.image.url,
         'next_evolution': {
-            'title_ru': requested_pokemon.next_evolution.first().title,
-            'pokemon_id': requested_pokemon.next_evolution.first().id,
-            'img_url': requested_pokemon.next_evolution.first().image.url,
-        } if requested_pokemon.next_evolution.first() else '',
+            'title_ru': next_evolution_pokemon.title,
+            'pokemon_id': next_evolution_pokemon.id,
+            'img_url': next_evolution_pokemon.image.url,
+        } if next_evolution_pokemon else '',
         'previous_evolution': {
             'title_ru': requested_pokemon.previous_evolution.title,
             'pokemon_id': requested_pokemon.previous_evolution.id,
