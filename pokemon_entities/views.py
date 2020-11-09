@@ -11,8 +11,12 @@ request.META['SERVER_NAME'] = '127.0.0.1'
 request.META['SERVER_PORT'] = '8000'
 
 
-def add_pokemon(folium_map, lat, lon, name, image_url):
+def add_pokemon(folium_map, lat, lon, name, image_url, **kwargs):  # noqa: WPS211
     """Добавление покемонов на карту."""
+    popup = ''
+    for title, mark in kwargs.items():  # noqa: WPS519
+        popup += f'<b>{title}: {mark}</b><br>'  # noqa: WPS336
+
     icon = folium.features.CustomIcon(
         image_url,
         icon_size=(50, 50),
@@ -21,6 +25,7 @@ def add_pokemon(folium_map, lat, lon, name, image_url):
         [lat, lon],
         tooltip=name,
         icon=icon,
+        popup=folium.Popup(popup, max_width=100),
     ).add_to(folium_map)
 
 
@@ -47,6 +52,11 @@ def show_all_pokemons(request):  # noqa: WPS442
                 pokemon_entity.lon,
                 pokemon.title,
                 image_url,
+                Health=pokemon_entity.health,
+                Level=pokemon_entity.level,
+                Strength=pokemon_entity.strength,
+                Defence=pokemon_entity.defence,
+                Stamina=pokemon_entity.stamina,
             )
 
     return render(request, 'mainpage.html', context={
@@ -69,6 +79,11 @@ def show_pokemon(request, pokemon_id):  # noqa: WPS442
             pokemon_entity.lon,
             pokemon_entity.pokemon.title,
             image_url,
+            Health=pokemon_entity.health,
+            Level=pokemon_entity.level,
+            Strength=pokemon_entity.strength,
+            Defence=pokemon_entity.defence,
+            Stamina=pokemon_entity.stamina,
         )
 
     next_evolution_pokemon = requested_pokemon.next_evolution.first()
