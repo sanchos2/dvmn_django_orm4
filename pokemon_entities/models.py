@@ -4,7 +4,8 @@ from django.db import models
 class PokemonElementType(models.Model):
     """Стихии покемонов."""
 
-    title = models.CharField(max_length=20)  # noqa: WPS432
+    title = models.CharField(verbose_name='Название', max_length=20)  # noqa: WPS432
+    image = models.ImageField(verbose_name='Стихия картинка', upload_to='pokemons_elemnt_img')
 
     def __str__(self):
         """Название в админке."""
