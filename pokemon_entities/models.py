@@ -1,6 +1,22 @@
 from django.db import models
 
 
+class PokemonElementType(models.Model):
+    """Стихии покемонов."""
+
+    title = models.CharField(verbose_name='Название', max_length=20)  # noqa: WPS432
+    image = models.ImageField(verbose_name='Стихия картинка', upload_to='pokemons_elemnt_img')
+    strong_against = models.ManyToManyField(
+        'PokemonElementType',
+        verbose_name='Силен против',
+        symmetrical=False,
+    )
+
+    def __str__(self):
+        """Название в админке."""
+        return self.title
+
+
 class Pokemon(models.Model):
     """Модель покемонов."""
 
@@ -17,6 +33,7 @@ class Pokemon(models.Model):
         related_name='next_evolution',
         verbose_name='Предок',
     )
+    element_type = models.ManyToManyField(PokemonElementType, verbose_name='Стихия')
 
     def __str__(self):
         """Название в админке."""
